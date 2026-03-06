@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B. Sabio — Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50%      { opacity: 1;   }
+    }
+    .skeleton { animation: pulse 1.5s ease-in-out infinite; }
+
+    #admin-panel { transform: translateX(100%); transition: transform 0.3s ease; }
+    #admin-panel.open { transform: translateX(0); }
+    #admin-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    #admin-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .log-entry { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans antialiased">
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav class="fixed top-0 inset-x-0 z-50 bg-gray-950/80 backdrop-blur-md border-b border-gray-800">
+    <div class="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
+      <a href="#" id="nav-brand" class="text-xl font-bold gradient-text">Portfolio</a>
+      <div class="hidden sm:flex items-center gap-8 text-sm text-gray-400">
+        <a href="#about"    class="hover:text-white transition">About</a>
+        <a href="#work"     class="hover:text-white transition">Projects</a>
+        <a href="#skills"   class="hover:text-white transition">Skills</a>
+        <a href="#contact"  class="hover:text-white transition">Contact</a>
+      </div>
+      <button id="mobile-menu-btn" class="sm:hidden text-gray-400 hover:text-white" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </div>
+    <div id="mobile-menu" class="sm:hidden hidden border-t border-gray-800 px-6 pb-4 space-y-3 text-sm text-gray-400">
+      <a href="#about"    class="block hover:text-white transition">About</a>
+      <a href="#work"     class="block hover:text-white transition">Projects</a>
+      <a href="#skills"   class="block hover:text-white transition">Skills</a>
+      <a href="#contact"  class="block hover:text-white transition">Contact</a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="relative pt-32 pb-20 px-6 text-center overflow-hidden">
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative max-w-3xl mx-auto">
+      <p id="hero-subtitle" class="text-indigo-400 font-medium mb-3 tracking-wide uppercase text-sm">Welcome</p>
+      <h1 class="text-4xl sm:text-6xl font-extrabold leading-tight mb-6">
+        Hi, I'm <span id="hero-name" class="gradient-text">B. Sabio</span>
+      </h1>
+      <p id="hero-tagline" class="text-lg sm:text-xl text-gray-400 max-w-xl mx-auto mb-8">
+        Loading...
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#work"
+           class="px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition">
+          View My Work
+        </a>
+        <a href="#contact"
+           class="px-6 py-3 rounded-lg border border-gray-700 hover:border-indigo-500 text-gray-300 hover:text-white font-semibold transition">
+          Get In Touch
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== ABOUT ME ===== -->
+  <section id="about" class="max-w-4xl mx-auto px-6 py-20">
+    <h2 class="text-3xl font-bold text-center mb-4">About Me</h2>
+    <div class="w-16 h-1 bg-indigo-600 mx-auto rounded-full mb-12"></div>
+    <p id="about-bio" class="text-gray-400 text-center leading-relaxed max-w-2xl mx-auto text-lg">
+      Loading...
+    </p>
+  </section>
+
+  <!-- ===== PROJECTS ===== -->
+  <section id="work" class="max-w-6xl mx-auto px-6 py-20">
+    <h2 class="text-3xl font-bold text-center mb-4">Projects</h2>
+    <div class="w-16 h-1 bg-indigo-600 mx-auto rounded-full mb-12"></div>
+
+    <div id="projects-grid"
+         class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="skeleton rounded-2xl bg-gray-800 h-56"></div>
+      <div class="skeleton rounded-2xl bg-gray-800 h-56"></div>
+      <div class="skeleton rounded-2xl bg-gray-800 h-56"></div>
+    </div>
+
+    <p id="projects-error" class="hidden text-center text-red-400 mt-8"></p>
+  </section>
+
+  <!-- ===== SKILLS ===== -->
+  <section id="skills" class="max-w-4xl mx-auto px-6 py-20">
+    <h2 class="text-3xl font-bold text-center mb-4">Skills &amp; Technologies</h2>
+    <div class="w-16 h-1 bg-indigo-600 mx-auto rounded-full mb-12"></div>
+    <div id="skills-container" class="flex flex-wrap justify-center gap-3"></div>
+  </section>
+
+  <!-- ===== CONTACT / SCHEDULE ===== -->
+  <section id="contact" class="max-w-4xl mx-auto px-6 py-20">
+    <h2 class="text-3xl font-bold text-center mb-4">Get In Touch</h2>
+    <div class="w-16 h-1 bg-indigo-600 mx-auto rounded-full mb-12"></div>
+    <p class="text-gray-400 text-center max-w-xl mx-auto mb-10">
+      Interested in working together? Feel free to reach out through any of the channels below.
+    </p>
+    <div id="contact-links" class="flex flex-wrap justify-center gap-6">
+      <!-- Filled dynamically from config.json -->
+    </div>
+    <div id="scheduling-container" class="mt-12 text-center hidden">
+      <a id="scheduling-link" href="#" target="_blank" rel="noopener noreferrer"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        Schedule a Meeting
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== ADMIN PANEL (slide-out drawer) ===== -->
+  <div id="admin-overlay" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm" onclick="toggleAdmin()"></div>
+  <div id="admin-panel" class="fixed top-0 right-0 z-[70] h-full w-full max-w-lg bg-gray-900 border-l border-gray-800 overflow-y-auto flex flex-col">
+    <!-- Panel header -->
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800 shrink-0">
+      <h2 class="text-lg font-bold gradient-text">Admin Panel</h2>
+      <button onclick="toggleAdmin()" class="text-gray-400 hover:text-white transition" aria-label="Close">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Panel body -->
+    <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+
+      <!-- GitHub credentials -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">GitHub</h3>
+        <p id="admin-repo-label" class="text-sm text-gray-400">Loading repo info from config.json...</p>
+        <input id="admin-owner" type="hidden" />
+        <input id="admin-repo" type="hidden" />
+        <input id="admin-token" type="password" placeholder="Paste your GitHub Personal Access Token"
+               class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition" />
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input id="admin-remember" type="checkbox" class="accent-indigo-500 w-4 h-4 rounded" />
+          <span class="text-xs text-gray-400">Remember token in this browser</span>
+        </label>
+        <p class="text-xs text-gray-600">Saved to localStorage on this device only. Never sent anywhere except the GitHub API.</p>
+      </div>
+
+      <!-- Add a Project form -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Add a Project</h3>
+        <input id="admin-title" type="text" placeholder="Project title"
+               class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition" />
+        <textarea id="admin-desc" rows="3" placeholder="Short description of the project"
+                  class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
+        <input id="admin-link" type="text" placeholder="Project URL (e.g. https://github.com/...)"
+               class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition" />
+        <input id="admin-tags" type="text" placeholder="Tags (comma-separated, e.g. React, Node.js, CSS)"
+               class="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition" />
+        <button id="admin-submit-btn" onclick="handleAdminSubmit()"
+                class="w-full py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:text-gray-500 text-white font-semibold transition flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+          Push to GitHub
+        </button>
+      </div>
+
+      <!-- JSON preview -->
+      <div id="admin-preview-section" class="hidden space-y-3">
+        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Card Preview</h3>
+        <div id="admin-card-preview" class="rounded-2xl border border-indigo-500/30 bg-gray-900 p-6"></div>
+        <pre id="admin-preview" class="bg-gray-800 border border-gray-700 rounded-lg p-4 text-xs text-green-400 overflow-x-auto whitespace-pre-wrap"></pre>
+      </div>
+
+      <!-- Activity log -->
+      <div class="space-y-3">
+        <h3 class="text-sm font-semibold text-gray-300 uppercase tracking-wide">Activity Log</h3>
+        <div id="admin-log" class="bg-gray-800/50 border border-gray-700 rounded-lg p-4 max-h-48 overflow-y-auto space-y-1 text-xs font-mono">
+          <p class="text-gray-500">Ready. Waiting for input...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating admin toggle button -->
+  <button id="admin-fab" onclick="toggleAdmin()"
+          class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 flex items-center justify-center transition hover:scale-105"
+          aria-label="Open Admin Panel">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+  </button>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="border-t border-gray-800 py-8 text-center text-sm text-gray-500">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>&copy; <span id="footer-year"></span> <span id="footer-brand">AI Consultant</span>. All rights reserved.</p>
+      <div id="footer-socials" class="flex gap-5">
+        <!-- Filled dynamically from config.json -->
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    // ---------- Mobile Menu Toggle ----------
+    document.getElementById("mobile-menu-btn").addEventListener("click", function() {
+      document.getElementById("mobile-menu").classList.toggle("hidden");
+    });
+
+    // ---------- Footer Year ----------
+    document.getElementById("footer-year").textContent = new Date().getFullYear();
+
+    // ---------- Load saved GitHub token from localStorage ----------
+    (function loadSavedToken() {
+      var saved = localStorage.getItem("gh_pat");
+      if (saved) {
+        document.getElementById("admin-token").value = saved;
+        document.getElementById("admin-remember").checked = true;
+      }
+    })();
+
+    // Save / clear token when checkbox changes or on successful push
+    document.getElementById("admin-remember").addEventListener("change", function() {
+      if (!this.checked) localStorage.removeItem("gh_pat");
+      else {
+        var t = document.getElementById("admin-token").value.trim();
+        if (t) localStorage.setItem("gh_pat", t);
+      }
+    });
+    function persistTokenIfRemembered() {
+      if (document.getElementById("admin-remember").checked) {
+        var t = document.getElementById("admin-token").value.trim();
+        if (t) localStorage.setItem("gh_pat", t);
+      }
+    }
+
+    // ---------- Fetch & Apply Site Config ----------
+    (function loadConfig() {
+      fetch("config.json")
+        .then(function(res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(function(cfg) {
+          // Hero
+          document.getElementById("hero-name").textContent = cfg.name || "Your Name";
+          document.getElementById("hero-subtitle").textContent = cfg.subtitle || "Welcome";
+          document.getElementById("hero-tagline").textContent = cfg.tagline || "";
+
+          // Nav & Footer brand
+          document.getElementById("nav-brand").textContent = cfg.name || "Portfolio";
+          document.getElementById("footer-brand").textContent = cfg.name || "Portfolio";
+          document.title = (cfg.name || "Portfolio") + " — " + (cfg.tagline || "Portfolio");
+
+          // About
+          document.getElementById("about-bio").textContent = cfg.bio || "";
+
+          // Contact section
+          var contactEl = document.getElementById("contact-links");
+          var contactHtml = "";
+          var socials2 = cfg.social || {};
+          if (socials2.github && socials2.github !== "https://github.com/YOUR_USERNAME") {
+            contactHtml += '<a href="' + sanitizeUrl(socials2.github) + '" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-5 py-3 bg-gray-900 border border-gray-800 rounded-xl hover:border-indigo-500 transition text-gray-300 hover:text-white"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 00-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 011.84 1.24 2.56 2.56 0 003.5 1 2.56 2.56 0 01.76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 011.24-3.22 4.3 4.3 0 01.12-3.18s1-.32 3.3 1.23a11.37 11.37 0 016 0c2.3-1.55 3.3-1.23 3.3-1.23a4.3 4.3 0 01.12 3.18 4.64 4.64 0 011.24 3.22c0 4.61-2.8 5.63-5.48 5.92a2.87 2.87 0 01.82 2.23v3.29c0 .32.22.7.82.58A12 12 0 0012 .3"/></svg> GitHub</a>';
+          }
+          if (socials2.linkedin && socials2.linkedin !== "https://linkedin.com/in/YOUR_USERNAME") {
+            contactHtml += '<a href="' + sanitizeUrl(socials2.linkedin) + '" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-5 py-3 bg-gray-900 border border-gray-800 rounded-xl hover:border-indigo-500 transition text-gray-300 hover:text-white"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05a3.74 3.74 0 013.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77A1.75 1.75 0 000 1.73v20.54A1.75 1.75 0 001.77 24h20.46A1.75 1.75 0 0024 22.27V1.73A1.75 1.75 0 0022.23 0z"/></svg> LinkedIn</a>';
+          }
+          if (socials2.email && socials2.email !== "your@email.com") {
+            contactHtml += '<a href="mailto:' + escapeHtml(socials2.email) + '" class="flex items-center gap-2 px-5 py-3 bg-gray-900 border border-gray-800 rounded-xl hover:border-indigo-500 transition text-gray-300 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> Email</a>';
+          }
+          contactEl.innerHTML = contactHtml;
+
+          // Scheduling link
+          var sched = cfg.scheduling || {};
+          if (sched.link && sched.link !== "YOUR_CALCOM_USERNAME/30min") {
+            var schedUrl = sched.provider === "calendly"
+              ? "https://calendly.com/" + sched.link
+              : "https://cal.com/" + sched.link;
+            document.getElementById("scheduling-link").href = schedUrl;
+            document.getElementById("scheduling-container").classList.remove("hidden");
+          }
+
+          // Skills
+          var skillsEl = document.getElementById("skills-container");
+          var skills = cfg.skills || [];
+          skillsEl.innerHTML = skills.map(function(s) {
+            return '<span class="px-4 py-1.5 bg-gray-800 rounded-full text-sm text-gray-300">' + escapeHtml(s) + '</span>';
+          }).join("");
+
+          // Footer social links
+          var socials = cfg.social || {};
+          var socialsEl = document.getElementById("footer-socials");
+          var socialsHtml = "";
+          if (socials.github && socials.github !== "https://github.com/YOUR_USERNAME") {
+            socialsHtml += '<a href="' + sanitizeUrl(socials.github) + '" target="_blank" rel="noopener noreferrer" class="hover:text-white transition" aria-label="GitHub">' +
+              '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .3a12 12 0 00-3.8 23.38c.6.11.82-.26.82-.58v-2.16c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 00-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 011.84 1.24 2.56 2.56 0 003.5 1 2.56 2.56 0 01.76-1.61c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 011.24-3.22 4.3 4.3 0 01.12-3.18s1-.32 3.3 1.23a11.37 11.37 0 016 0c2.3-1.55 3.3-1.23 3.3-1.23a4.3 4.3 0 01.12 3.18 4.64 4.64 0 011.24 3.22c0 4.61-2.8 5.63-5.48 5.92a2.87 2.87 0 01.82 2.23v3.29c0 .32.22.7.82.58A12 12 0 0012 .3"/></svg></a>';
+          }
+          if (socials.linkedin && socials.linkedin !== "https://linkedin.com/in/YOUR_USERNAME") {
+            socialsHtml += '<a href="' + sanitizeUrl(socials.linkedin) + '" target="_blank" rel="noopener noreferrer" class="hover:text-white transition" aria-label="LinkedIn">' +
+              '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05a3.74 3.74 0 013.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 110-4.13 2.06 2.06 0 010 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.23 0H1.77A1.75 1.75 0 000 1.73v20.54A1.75 1.75 0 001.77 24h20.46A1.75 1.75 0 0024 22.27V1.73A1.75 1.75 0 0022.23 0z"/></svg></a>';
+          }
+          if (socials.email && socials.email !== "your@email.com") {
+            socialsHtml += '<a href="mailto:' + escapeHtml(socials.email) + '" class="hover:text-white transition" aria-label="Email">' +
+              '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></a>';
+          }
+          socialsEl.innerHTML = socialsHtml;
+
+          // Admin panel — auto-fill GitHub owner/repo from config
+          var gh = cfg.github || {};
+          if (gh.owner && gh.owner !== "YOUR_USERNAME") {
+            document.getElementById("admin-owner").value = gh.owner;
+            document.getElementById("admin-repo").value = gh.repo || "";
+            document.getElementById("admin-repo-label").innerHTML =
+              'Pushing to <span class="text-indigo-400 font-medium">' + escapeHtml(gh.owner) + '/' + escapeHtml(gh.repo || '') + '</span>';
+          } else {
+            document.getElementById("admin-repo-label").innerHTML =
+              '<span class="text-amber-400">Set <code>github.owner</code> and <code>github.repo</code> in config.json</span>';
+          }
+        })
+        .catch(function(err) {
+          console.warn("Could not load config.json:", err);
+        });
+    })();
+
+    // ---------- Fetch & Render Projects ----------
+    (function loadProjects() {
+      var grid  = document.getElementById("projects-grid");
+      var error = document.getElementById("projects-error");
+
+      fetch("projects.json")
+        .then(function(res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json();
+        })
+        .then(function(data) {
+          var projects = data.projects || [];
+
+          if (projects.length === 0) {
+            grid.innerHTML = '<p class="col-span-full text-center text-gray-500">No projects yet — add one with the portfolio manager script!</p>';
+            return;
+          }
+
+          // Color accents for cards
+          var accents = [
+            { border: "border-indigo-500/30", bg: "bg-indigo-500/10", text: "text-indigo-400", icon: "🤖" },
+            { border: "border-purple-500/30", bg: "bg-purple-500/10", text: "text-purple-400", icon: "🚀" },
+            { border: "border-pink-500/30",   bg: "bg-pink-500/10",   text: "text-pink-400",   icon: "💡" },
+            { border: "border-cyan-500/30",   bg: "bg-cyan-500/10",   text: "text-cyan-400",   icon: "⚡" },
+            { border: "border-amber-500/30",  bg: "bg-amber-500/10",  text: "text-amber-400",  icon: "🔧" },
+            { border: "border-emerald-500/30",bg: "bg-emerald-500/10",text: "text-emerald-400", icon: "🌐" }
+          ];
+
+          grid.innerHTML = projects.map(function(p, i) {
+            var a = accents[i % accents.length];
+
+            // Sanitize text content to prevent XSS
+            var title = escapeHtml(p.title || "Untitled Project");
+            var desc  = escapeHtml(p.description || "No description provided.");
+            var link  = sanitizeUrl(p.link || "#");
+
+            return (
+              '<div class="card-hover rounded-2xl border ' + a.border + ' bg-gray-900 p-6 flex flex-col">' +
+                '<div class="w-12 h-12 rounded-xl ' + a.bg + ' flex items-center justify-center text-2xl mb-4">' + a.icon + '</div>' +
+                '<h3 class="text-lg font-semibold mb-2">' + title + '</h3>' +
+                '<p class="text-gray-400 text-sm leading-relaxed flex-grow">' + desc + '</p>' +
+                (link !== "#"
+                  ? '<a href="' + link + '" target="_blank" rel="noopener noreferrer" ' +
+                    'class="inline-flex items-center gap-1 mt-4 text-sm font-medium ' + a.text + ' hover:underline">' +
+                      'View Project' +
+                      '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">' +
+                        '<path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>' +
+                      '</svg>' +
+                    '</a>'
+                  : ''
+                ) +
+              '</div>'
+            );
+          }).join("");
+        })
+        .catch(function(err) {
+          console.error("Failed to load projects:", err);
+          grid.innerHTML = "";
+          error.textContent = "Could not load projects. Make sure projects.json exists in the repository root.";
+          error.classList.remove("hidden");
+        });
+    })();
+
+    // ---------- Utility: HTML Escaping (XSS prevention) ----------
+    function escapeHtml(str) {
+      var div = document.createElement("div");
+      div.appendChild(document.createTextNode(str));
+      return div.innerHTML;
+    }
+
+    // ---------- Utility: URL Sanitization ----------
+    function sanitizeUrl(url) {
+      if (!url || url === "#") return "#";
+      try {
+        var parsed = new URL(url, window.location.origin);
+        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+          return parsed.href;
+        }
+      } catch(e) { /* invalid URL */ }
+      return "#";
+    }
+
+    // ======================================================
+    //  ADMIN PANEL — Ollama + GitHub Integration
+    // ======================================================
+
+    // ---------- Toggle Admin Panel ----------
+    function toggleAdmin() {
+      document.getElementById("admin-panel").classList.toggle("open");
+      document.getElementById("admin-overlay").classList.toggle("open");
+    }
+
+    // ---------- Activity Log ----------
+    function adminLog(msg, type) {
+      var log = document.getElementById("admin-log");
+      var colors = { info: "text-gray-400", ok: "text-green-400", err: "text-red-400", warn: "text-amber-400" };
+      var time = new Date().toLocaleTimeString();
+      var el = document.createElement("p");
+      el.className = "log-entry " + (colors[type] || colors.info);
+      el.textContent = "[" + time + "] " + msg;
+      log.appendChild(el);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // ---------- Live Card Preview ----------
+    function updateCardPreview() {
+      var title = document.getElementById("admin-title").value.trim();
+      var desc  = document.getElementById("admin-desc").value.trim();
+      var link  = document.getElementById("admin-link").value.trim();
+      var tagsRaw = document.getElementById("admin-tags").value.trim();
+      var section = document.getElementById("admin-preview-section");
+      var cardEl  = document.getElementById("admin-card-preview");
+      var jsonEl  = document.getElementById("admin-preview");
+
+      if (!title && !desc) { section.classList.add("hidden"); return; }
+      section.classList.remove("hidden");
+
+      var tags = tagsRaw ? tagsRaw.split(",").map(function(t) { return t.trim(); }).filter(Boolean) : [];
+      var tagsHtml = tags.map(function(t) {
+        return '<span class="px-2 py-0.5 bg-gray-800 rounded text-xs text-gray-400">' + escapeHtml(t) + '</span>';
+      }).join(" ");
+
+      cardEl.innerHTML =
+        '<div class="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-2xl mb-4">🤖</div>' +
+        '<h3 class="text-lg font-semibold mb-2">' + escapeHtml(title || "Untitled Project") + '</h3>' +
+        '<p class="text-gray-400 text-sm leading-relaxed">' + escapeHtml(desc || "No description provided.") + '</p>' +
+        (tagsHtml ? '<div class="flex flex-wrap gap-1.5 mt-3">' + tagsHtml + '</div>' : '') +
+        (link ? '<a href="' + sanitizeUrl(link) + '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 mt-4 text-sm font-medium text-indigo-400 hover:underline">View Project <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>' : '');
+
+      var obj = { title: title || "Untitled Project", description: desc || "No description provided." };
+      if (link) obj.link = link;
+      if (tags.length) obj.tags = tags;
+      jsonEl.textContent = JSON.stringify(obj, null, 2);
+    }
+    ["admin-title","admin-desc","admin-link","admin-tags"].forEach(function(id) {
+      document.getElementById(id).addEventListener("input", updateCardPreview);
+    });
+
+    // ---------- Main Submit Handler ----------
+    async function handleAdminSubmit() {
+      var btn = document.getElementById("admin-submit-btn");
+      btn.disabled = true;
+      btn.textContent = "Working...";
+
+      try {
+        // Gather inputs
+        var owner = document.getElementById("admin-owner").value.trim();
+        var repo  = document.getElementById("admin-repo").value.trim();
+        var token = document.getElementById("admin-token").value.trim();
+        var title = document.getElementById("admin-title").value.trim();
+        var desc  = document.getElementById("admin-desc").value.trim();
+        var link  = document.getElementById("admin-link").value.trim();
+        var tagsRaw = document.getElementById("admin-tags").value.trim();
+
+        if (!owner || !repo || !token) { adminLog("Fill in all GitHub credential fields.", "err"); return; }
+        if (!title) { adminLog("Enter a project title.", "err"); return; }
+
+        // ----- Step 1: Build project object -----
+        var newProject = { title: title, description: desc || "No description provided." };
+        if (link) newProject.link = link;
+        if (tagsRaw) newProject.tags = tagsRaw.split(",").map(function(t) { return t.trim(); }).filter(Boolean);
+        newProject.date = new Date().toISOString().slice(0, 10);
+
+        adminLog("Project built: " + title, "ok");
+
+        // Show preview
+        var previewSection = document.getElementById("admin-preview-section");
+        document.getElementById("admin-preview").textContent = JSON.stringify(newProject, null, 2);
+        previewSection.classList.remove("hidden");
+
+        // ----- Step 2: Fetch current projects.json from GitHub -----
+        adminLog("Fetching projects.json from " + owner + "/" + repo + "...", "info");
+
+        var ghHeaders = {
+          "Authorization": "token " + token,
+          "Accept": "application/vnd.github.v3+json"
+        };
+        var apiUrl = "https://api.github.com/repos/" + encodeURIComponent(owner) + "/" + encodeURIComponent(repo) + "/contents/projects.json";
+
+        var currentSha = null;
+        var projectsData = { projects: [] };
+
+        var fetchRes = await fetch(apiUrl, { headers: ghHeaders });
+        if (fetchRes.ok) {
+          var fileInfo = await fetchRes.json();
+          currentSha = fileInfo.sha;
+          var decoded = atob(fileInfo.content.replace(/\n/g, ""));
+          projectsData = JSON.parse(decoded);
+          adminLog("Fetched projects.json (SHA: " + currentSha.substring(0, 7) + "...)", "ok");
+        } else if (fetchRes.status === 404) {
+          adminLog("projects.json not found — will create it.", "warn");
+        } else {
+          throw new Error("GitHub fetch failed: HTTP " + fetchRes.status);
+        }
+
+        // ----- Step 3: Append new project -----
+        if (!Array.isArray(projectsData.projects)) projectsData.projects = [];
+        projectsData.projects.push(newProject);
+
+        adminLog("Appended project. Total: " + projectsData.projects.length, "info");
+
+        // ----- Step 4: Push updated file to GitHub -----
+        adminLog("Pushing updated projects.json to GitHub...", "info");
+
+        var newContent = JSON.stringify(projectsData, null, 2);
+        var encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+        var putBody = {
+          message: "Add project: " + (newProject.title || "new project"),
+          content: encoded
+        };
+        if (currentSha) putBody.sha = currentSha;
+
+        var pushRes = await fetch(apiUrl, {
+          method: "PUT",
+          headers: ghHeaders,
+          body: JSON.stringify(putBody)
+        });
+
+        if (!pushRes.ok) {
+          var errBody = await pushRes.text();
+          throw new Error("GitHub push failed (" + pushRes.status + "): " + errBody.substring(0, 200));
+        }
+
+        var pushData = await pushRes.json();
+        adminLog("Pushed successfully! New SHA: " + pushData.content.sha.substring(0, 7), "ok");
+        adminLog("Commit: " + pushData.commit.html_url, "ok");
+
+        // Save token if "Remember" is checked
+        persistTokenIfRemembered();
+
+        // ----- Step 5: Refresh the project cards on the page -----
+        adminLog("Refreshing project cards...", "info");
+        refreshProjectCards(projectsData);
+        adminLog("Done! Your live site will update shortly.", "ok");
+
+        // Clear the form
+        document.getElementById("admin-title").value = "";
+        document.getElementById("admin-desc").value = "";
+        document.getElementById("admin-link").value = "";
+        document.getElementById("admin-tags").value = "";
+
+      } catch(e) {
+        adminLog("Error: " + e.message, "err");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Push to GitHub';
+      }
+    }
+
+    // ---------- Refresh Project Cards In-Place ----------
+    function refreshProjectCards(data) {
+      var grid = document.getElementById("projects-grid");
+      var projects = data.projects || [];
+      if (projects.length === 0) {
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-500">No projects yet.</p>';
+        return;
+      }
+      var accents = [
+        { border: "border-indigo-500/30", bg: "bg-indigo-500/10", text: "text-indigo-400", icon: "\uD83E\uDD16" },
+        { border: "border-purple-500/30", bg: "bg-purple-500/10", text: "text-purple-400", icon: "\uD83D\uDE80" },
+        { border: "border-pink-500/30",   bg: "bg-pink-500/10",   text: "text-pink-400",   icon: "\uD83D\uDCA1" },
+        { border: "border-cyan-500/30",   bg: "bg-cyan-500/10",   text: "text-cyan-400",   icon: "\u26A1" },
+        { border: "border-amber-500/30",  bg: "bg-amber-500/10",  text: "text-amber-400",  icon: "\uD83D\uDD27" },
+        { border: "border-emerald-500/30",bg: "bg-emerald-500/10",text: "text-emerald-400", icon: "\uD83C\uDF10" }
+      ];
+      grid.innerHTML = projects.map(function(p, i) {
+        var a = accents[i % accents.length];
+        var title = escapeHtml(p.title || "Untitled Project");
+        var desc  = escapeHtml(p.description || "No description provided.");
+        var link  = sanitizeUrl(p.link || "#");
+        var tags  = (p.tags || []).map(function(t) { return '<span class="px-2 py-0.5 bg-gray-800 rounded text-xs text-gray-400">' + escapeHtml(t) + '</span>'; }).join(" ");
+        return (
+          '<div class="card-hover rounded-2xl border ' + a.border + ' bg-gray-900 p-6 flex flex-col">' +
+            '<div class="w-12 h-12 rounded-xl ' + a.bg + ' flex items-center justify-center text-2xl mb-4">' + a.icon + '</div>' +
+            '<h3 class="text-lg font-semibold mb-2">' + title + '</h3>' +
+            '<p class="text-gray-400 text-sm leading-relaxed flex-grow">' + desc + '</p>' +
+            (tags ? '<div class="flex flex-wrap gap-1.5 mt-3">' + tags + '</div>' : '') +
+            (link !== "#"
+              ? '<a href="' + link + '" target="_blank" rel="noopener noreferrer" ' +
+                'class="inline-flex items-center gap-1 mt-4 text-sm font-medium ' + a.text + ' hover:underline">' +
+                  'View Project' +
+                  '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">' +
+                    '<path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>' +
+                  '</svg>' +
+                '</a>'
+              : ''
+            ) +
+          '</div>'
+        );
+      }).join("");
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "projects": [
+    {
+      "title": "E-commerce Platform",
+      "description": "A full-stack online store built with React, Node.js, and MongoDB featuring real-time inventory management.",
+      "link": "https://github.com/username/ecommerce-platform"
+    },
+    {
+      "title": "Weather Dashboard",
+      "description": "Interactive weather application using React and OpenWeatherMap API with 5-day forecasts.",
+      "link": "https://weather-app.example.com"
+    },
+    {
+      "title": "Task Management System",
+      "description": "Python Flask web application for project task tracking with SQLite database.",
+      "link": "https://github.com/username/task-tracker"
+    }
+  ]
+}

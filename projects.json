@@ -1,8 +1,14 @@
 {
   "projects": [
     {
-      "title": "workout",
-      "description": "make me a workout app that can track my calories and my workouts",
+      "title": "Study Buddy",
+      "description": "A responsive study companion web app built with JavaScript and CSS, featuring a clean mobile-friendly interface to help students stay organized.",
+      "link": "https://github.com/bsabio/IS322_project1",
+      "tags": ["JavaScript", "CSS", "Responsive Design"]
+    },
+    {
+      "title": "Workout Tracker",
+      "description": "A workout app that can track calories and workouts.",
       "date": "2026-03-06"
     }
   ]

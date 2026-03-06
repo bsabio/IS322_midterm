@@ -1,0 +1,32 @@
+{
+  "name": "B. Sabio",
+  "tagline": "Software Developer & AI Enthusiast",
+  "subtitle": "IS322 Midterm Project",
+  "bio": "I'm a software developer passionate about building modern web applications and exploring the possibilities of artificial intelligence. I enjoy working across the full stack — from crafting clean user interfaces to designing scalable back-end systems.",
+  "hero_description": "Building creative solutions with code and AI.",
+  "skills": [
+    "JavaScript",
+    "Python",
+    "React",
+    "Node.js",
+    "HTML & CSS",
+    "Tailwind CSS",
+    "Git & GitHub",
+    "REST APIs",
+    "SQL",
+    "AI / Machine Learning"
+  ],
+  "social": {
+    "github": "https://github.com/bsabio",
+    "linkedin": "https://linkedin.com/in/YOUR_USERNAME",
+    "email": "your@email.com"
+  },
+  "scheduling": {
+    "provider": "calcom",
+    "link": "YOUR_CALCOM_USERNAME/30min"
+  },
+  "github": {
+    "owner": "bsabio",
+    "repo": "IS322_midterm"
+  }
+}

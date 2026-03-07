@@ -4,12 +4,21 @@
       "title": "Study Buddy",
       "description": "A responsive study companion web app built with JavaScript and CSS, featuring a clean mobile-friendly interface to help students stay organized.",
       "link": "https://github.com/bsabio/IS322_project1",
-      "tags": ["JavaScript", "CSS", "Responsive Design"]
+      "tags": [
+        "JavaScript",
+        "CSS",
+        "Responsive Design"
+      ]
     },
     {
       "title": "Workout Tracker",
       "description": "A workout app that can track calories and workouts.",
       "date": "2026-03-06"
+    },
+    {
+      "title": "test",
+      "description": "make me a website using node and next.js about minecraft",
+      "date": "2026-03-07"
     }
   ]
 }

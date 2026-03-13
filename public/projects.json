@@ -10,6 +10,13 @@
       "title": "Workout Tracker",
       "description": "A workout app that can track calories and workouts.",
       "date": "2026-03-06"
+    },
+    {
+      "title": "Voice Transcriber",
+      "description": "A browser-based speech-to-text transcriber that records audio, sends it to Whisper, and returns editable transcripts.",
+      "link": "/builder",
+      "tags": ["Whisper", "Speech-to-Text", "JavaScript", "Next.js"],
+      "date": "2026-03-13"
     }
   ]
 }

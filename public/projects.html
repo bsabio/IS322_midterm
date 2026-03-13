@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects Directory Browser</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --accent: #0f766e;
+      --accent-2: #0e7490;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #e2e8f0, var(--bg));
+      min-height: 100vh;
+    }
+
+    main {
+      width: min(1100px, 94%);
+      margin: 2rem auto 3rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+
+    .controls input,
+    .controls button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      font: inherit;
+      background: #fff;
+    }
+
+    .controls button {
+      cursor: pointer;
+      font-weight: 600;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .status {
+      margin: 0;
+      color: var(--muted);
+      min-height: 1.1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.9rem;
+      display: grid;
+      gap: 0.55rem;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+    }
+
+    .meta {
+      font-size: 0.86rem;
+      color: var(--muted);
+      display: grid;
+      gap: 0.15rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.2rem;
+    }
+
+    .actions button,
+    .actions a {
+      flex: 1;
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 0.55rem 0.65rem;
+      font: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .launch {
+      background: var(--accent-2);
+      color: #fff;
+      border-color: var(--accent-2);
+    }
+
+    .repo-link {
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 6, 23, 0.72);
+      z-index: 60;
+      padding: 1rem;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-shell {
+      width: min(1100px, 96vw);
+      height: min(88vh, 860px);
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .modal-bar {
+      padding: 0.65rem 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+      gap: 0.7rem;
+    }
+
+    .modal-bar p {
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      color: #334155;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 0.45rem;
+    }
+
+    .modal-buttons a,
+    .modal-buttons button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      font: inherit;
+      text-decoration: none;
+      background: #fff;
+      cursor: pointer;
+      color: #0f172a;
+    }
+
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 100%;
+      background: #f8fafc;
+    }
+
+    @media (max-width: 900px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Published Projects</h1>
+    <p class="subtitle">Loaded from the GitHub <code>/projects</code> directory and sorted by last modified date.</p>
+
+    <section class="controls">
+      <input id="owner" placeholder="Owner" />
+      <input id="repo" placeholder="Repo" />
+      <input id="branch" value="main" placeholder="Branch" />
+      <button id="refresh-btn">Refresh Projects</button>
+    </section>
+
+    <p id="status" class="status">Initializing...</p>
+    <section id="projects-grid" class="grid"></section>
+    <section id="empty" class="empty" style="display:none;">No project files were found in <code>/projects</code>.</section>
+  </main>
+
+  <div id="preview-modal" class="modal" role="dialog" aria-modal="true" aria-label="Project preview">
+    <div class="modal-shell">
+      <div class="modal-bar">
+        <p id="modal-url">Preview</p>
+        <div class="modal-buttons">
+          <a id="modal-open-new" href="#" target="_blank" rel="noopener noreferrer">Open New Tab</a>
+          <button id="modal-close" type="button">Close</button>
+        </div>
+      </div>
+      <iframe id="modal-iframe" title="Project preview iframe" loading="lazy"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const PROJECTS_DIRECTORY = "projects";
+    const ownerInput = document.getElementById("owner");
+    const repoInput = document.getElementById("repo");
+    const branchInput = document.getElementById("branch");
+    const refreshBtn = document.getElementById("refresh-btn");
+    const statusEl = document.getElementById("status");
+    const gridEl = document.getElementById("projects-grid");
+    const emptyEl = document.getElementById("empty");
+
+    const modalEl = document.getElementById("preview-modal");
+    const modalUrlEl = document.getElementById("modal-url");
+    const modalOpenNewEl = document.getElementById("modal-open-new");
+    const modalCloseEl = document.getElementById("modal-close");
+    const modalIframeEl = document.getElementById("modal-iframe");
+
+    function setStatus(message) {
+      statusEl.textContent = message;
+    }
+
+    function formatDate(value) {
+      if (!value) return "Unknown";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "Unknown";
+      return d.toLocaleString();
+    }
+
+    function parseRepoFromConfig(config) {
+      if (config && config.github && config.github.owner && config.github.repo) {
+        return { owner: config.github.owner, repo: config.github.repo };
+      }
+      return { owner: "", repo: "" };
+    }
+
+    function computePagesBaseUrl(owner, repo) {
+      if (repo.endsWith(".github.io")) {
+        return `https://${owner}.github.io`;
+      }
+      return `https://${owner}.github.io/${repo}`;
+    }
+
+    async function fetchLatestCommitDate(owner, repo, branch, path) {
+      const url = `https://api.github.com/repos/${owner}/${repo}/commits?path=${encodeURIComponent(path)}&sha=${encodeURIComponent(branch)}&per_page=1`;
+      const res = await fetch(url, {
+        headers: {
+          Accept: "application/vnd.github+json",
+        },
+      });
+
+      if (!res.ok) {
+        return null;
+      }
+
+      const commits = await res.json();
+      if (!Array.isArray(commits) || commits.length === 0) {
+        return null;
+      }
+
+      return commits[0] && commits[0].commit && commits[0].commit.author
+        ? commits[0].commit.author.date
+        : null;
+    }
+
+    function openModal(url) {
+      modalUrlEl.textContent = url;
+      modalOpenNewEl.href = url;
+      modalIframeEl.src = url;
+      modalEl.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      modalEl.classList.remove("open");
+      modalIframeEl.src = "about:blank";
+      document.body.style.overflow = "";
+    }
+
+    function createCard(project) {
+      const card = document.createElement("article");
+      card.className = "card";
+
+      const title = document.createElement("h3");
+      title.textContent = project.name;
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.innerHTML = `
+        <span><strong>Path:</strong> ${project.path}</span>
+        <span><strong>Last Modified:</strong> ${formatDate(project.lastModified)}</span>
+      `;
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const launchButton = document.createElement("button");
+      launchButton.type = "button";
+      launchButton.className = "launch";
+      launchButton.textContent = "Launch";
+      launchButton.addEventListener("click", () => openModal(project.liveUrl));
+
+      const repoLink = document.createElement("a");
+      repoLink.className = "repo-link";
+      repoLink.href = project.html_url;
+      repoLink.target = "_blank";
+      repoLink.rel = "noopener noreferrer";
+      repoLink.textContent = "View on GitHub";
+
+      actions.appendChild(launchButton);
+      actions.appendChild(repoLink);
+
+      card.appendChild(title);
+      card.appendChild(meta);
+      card.appendChild(actions);
+
+      return card;
+    }
+
+    async function fetchProjects(owner, repo, branch) {
+      const contentsUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${PROJECTS_DIRECTORY}?ref=${encodeURIComponent(branch)}`;
+      const res = await fetch(contentsUrl, {
+        headers: {
+          Accept: "application/vnd.github+json",
+        },
+      });
+
+      if (!res.ok) {
+        const detail = await res.text();
+        throw new Error(`Contents API failed (${res.status}): ${detail}`);
+      }
+
+      const rows = await res.json();
+      if (!Array.isArray(rows)) {
+        throw new Error("Unexpected API response for projects directory.");
+      }
+
+      const files = rows.filter((item) => item.type === "file");
+      const pagesBase = computePagesBaseUrl(owner, repo);
+
+      const enriched = await Promise.all(
+        files.map(async (item) => {
+          const lastModified = await fetchLatestCommitDate(owner, repo, branch, item.path);
+          return {
+            ...item,
+            lastModified,
+            liveUrl: `${pagesBase}/${item.path}`,
+          };
+        }),
+      );
+
+      enriched.sort((a, b) => {
+        const aTime = a.lastModified ? new Date(a.lastModified).getTime() : 0;
+        const bTime = b.lastModified ? new Date(b.lastModified).getTime() : 0;
+        return bTime - aTime;
+      });
+
+      return enriched;
+    }
+
+    async function refreshProjects() {
+      const owner = ownerInput.value.trim();
+      const repo = repoInput.value.trim();
+      const branch = branchInput.value.trim() || "main";
+
+      if (!owner || !repo) {
+        setStatus("Owner and repo are required.");
+        return;
+      }
+
+      gridEl.innerHTML = "";
+      emptyEl.style.display = "none";
+      setStatus("Loading projects from GitHub...");
+      refreshBtn.disabled = true;
+
+      try {
+        const projects = await fetchProjects(owner, repo, branch);
+        if (!projects.length) {
+          emptyEl.style.display = "block";
+          setStatus("Loaded. No files found in /projects.");
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        projects.forEach((project) => fragment.appendChild(createCard(project)));
+        gridEl.appendChild(fragment);
+        setStatus(`Loaded ${projects.length} project file(s), newest first.`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        setStatus(`Failed to load projects: ${message}`);
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    async function init() {
+      try {
+        const cfgRes = await fetch("config.json");
+        if (cfgRes.ok) {
+          const cfg = await cfgRes.json();
+          const repoData = parseRepoFromConfig(cfg);
+          ownerInput.value = repoData.owner;
+          repoInput.value = repoData.repo;
+        }
+      } catch {
+        // Keep manual input flow.
+      }
+
+      refreshProjects();
+    }
+
+    refreshBtn.addEventListener("click", refreshProjects);
+    modalCloseEl.addEventListener("click", closeModal);
+    modalEl.addEventListener("click", (event) => {
+      if (event.target === modalEl) {
+        closeModal();
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

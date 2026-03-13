@@ -1,0 +1,35 @@
+{
+  "name": "is322_midterm",
+  "version": "1.0.0",
+  "description": "Portfolio automation with a Next.js builder API and GitHub publisher workflows.",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bsabio/IS322_midterm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bsabio/IS322_midterm/issues"
+  },
+  "homepage": "https://github.com/bsabio/IS322_midterm#readme",
+  "dependencies": {
+    "next": "^15.2.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^19.0.11",
+    "@types/react-dom": "^19.0.4",
+    "typescript": "^5.9.3"
+  }
+}

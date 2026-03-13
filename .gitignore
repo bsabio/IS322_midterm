@@ -21,6 +21,12 @@ build/
 *.swo
 *~
 
+# Node / TypeScript
+node_modules/
+*.tsbuildinfo
+.next/
+npm-debug.log*
+
 # OS
 .DS_Store
 Thumbs.db
